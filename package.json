@@ -1,0 +1,28 @@
+{
+  "name": "projet6oc_08-04-22",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sovlo1/Projet6OC_08-04-22.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Sovlo1/Projet6OC_08-04-22/issues"
+  },
+  "homepage": "https://github.com/Sovlo1/Projet6OC_08-04-22#readme",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "express": "^4.17.3",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.2.10",
+    "mongoose-unique-validator": "^3.0.0",
+    "multer": "^1.4.4"
+  }
+}

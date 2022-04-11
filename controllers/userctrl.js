@@ -32,7 +32,7 @@ exports.login = (req, res) => {
           }
           res.status(200).json({
             userId: user._id,
-            token: jwt.sign({ userId: user._Id }, "randomizer", {
+            token: jwt.sign({ userId: user._id }, "RANDOMIZER", {
               expiresIn: "24h",
             }),
           });

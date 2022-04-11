@@ -14,14 +14,14 @@ exports.listOneSauce = (req, res) => {
 };
 
 exports.addSauce = (req, res) => {
-  const sauceName = req.body;
-  console.log(sauceName);
-  const sauceImage = req.body.image;
+  const sauceName = JSON.parse(req.body.sauce);
   const newSauce = new Sauce({
     ...sauceName,
-    sauceImage: `${req.protocol}://${req.get("host")}/images/${
+    imageUrl: `${req.protocol}://${req.get("host")}/images/${
       req.file.filename
     }`,
+    likes: 0,
+    dislikes: 0,
   });
   newSauce
     .save()
@@ -29,8 +29,28 @@ exports.addSauce = (req, res) => {
 };
 
 exports.modifyOneSauce = (req, res) => {
-  const updatedSauce = req.body;
-  Sauce.updateOne(
+  let updatedSauce;
+  if (req.file) {
+    updatedSauce = {
+      ...JSON.parse(req.body.sauce),
+      imageUrl: `${req.protocol}://${req.get("host")}/images/${
+        req.file.filename
+      }`,
+    };
+    Sauce.findById(req.params.id).then((image) => {
+      const imageFile = image.imageUrl.split("/images/")[1];
+      fs.unlink(`images/${imageFile}`, (err) => {
+        if (err) {
+          console.log("Could not delete old image");
+        } else {
+          console.log("Succesfully deleted old image");
+        }
+      });
+    });
+  } else {
+    updatedSauce = { ...req.body };
+  }
+  Sauce.findByIdAndUpdate(
     { _id: req.params.id },
     { ...updatedSauce, _id: req.params.id }
   )
@@ -39,11 +59,32 @@ exports.modifyOneSauce = (req, res) => {
 };
 
 exports.deleteOneSauce = (req, res) => {
-  Sauce.findByIdAndDelete(req.params.id)
-    .then(() => res.end().json({ Message: "Sauce supprimée" }))
-    .catch((error) => res.status(400).json({ error }));
+  Sauce.findById(req.params.id)
+    .then((sauce) => {
+      const imageFile = sauce.imageUrl.split("/images/")[1];
+      fs.unlink(`images/${imageFile}`, () => {
+        Sauce.deleteOne({ _id: req.params.id })
+          .then(() => res.status(200).json({ message: "Sauce supprimée" }))
+          .catch((error) => res.status(400).json({ error }));
+      });
+    })
+    .catch((error) => res.status(500).json({ error }));
 };
 
 // exports.likeOneSauce = (req, res) => {
-
-// }
+//   const likeStatus = req.body.like
+//   console.log(likeStatus)
+//   Sauce.findById(req.params.id).then((sauce) => {
+//     if (
+//       !sauce.usersDisliked.includes(req.body.userId) &&
+//       !sauce.usersLiked.includes(req.body.userId)
+//     ) {
+//       if (likeStatus === 1) {
+//         { $push: }
+//         sauce.usersLike.push(req.body.userId)
+//       } else if (likeStatus === -1) {
+//         sauce.usersDislike.push(req.body.userId)
+//       }
+//     }
+//   });
+// };

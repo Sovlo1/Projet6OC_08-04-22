@@ -43,7 +43,7 @@ exports.modifyOneSauce = (req, res) => {
         if (err) {
           console.log("Could not delete old image");
         } else {
-          console.log("Succesfully deleted old image");
+          console.log("Successfully deleted old image");
         }
       });
     });
@@ -73,41 +73,37 @@ exports.deleteOneSauce = (req, res) => {
 
 exports.likeOneSauce = (req, res) => {
   const likeStatus = req.body.like;
+  let likeUpdate;
   Sauce.findById(req.params.id).then((sauce) => {
     if (likeStatus === 1 && !sauce.usersLiked.includes(req.body.userId)) {
-      Sauce.updateOne(
-        { _id: req.params.id },
-        {
-          $inc: { likes: 1 },
-          $push: { usersLiked: req.body.userId },
-        }
-      ).then(() => res.status(200).json({ message: ":)" }));
-    } else if (likeStatus === -1 && !sauce.usersDisliked.includes(req.body.userId)) {
-      Sauce.updateOne(
-        { _id: req.params.id },
-        {
-          $inc: { dislikes: 1 },
-          $push: { usersDisliked: req.body.userId },
-        }
-      ).then(() => res.status(200).json({ message: ">:(" }));
+      likeUpdate = {
+        $inc: { likes: 1 },
+        $push: { usersLiked: req.body.userId },
+      };
+    } else if (
+      likeStatus === -1 &&
+      !sauce.usersDisliked.includes(req.body.userId)
+    ) {
+      likeUpdate = {
+        $inc: { dislikes: 1 },
+        $push: { usersDisliked: req.body.userId },
+      };
     } else if (likeStatus === 0) {
       if (sauce.usersLiked.includes(req.body.userId)) {
-        Sauce.updateOne(
-          { _id: req.params.id },
-          {
-            $inc: { likes: -1 },
-            $pull: { usersLiked: req.body.userId },
-          }
-        ).then(() => res.status(200).json({ message: ":|" }));
+        likeUpdate = {
+          $inc: { likes: -1 },
+          $pull: { usersLiked: req.body.userId },
+        };
       } else {
-        Sauce.updateOne(
-          { _id: req.params.id },
-          {
-            $inc: { dislikes: -1 },
-            $pull: { usersDisliked: req.body.userId },
-          }
-        ).then(() => res.status(200).json({ message: ":>" }));
+        likeUpdate = {
+          $inc: { dislikes: -1 },
+          $pull: { usersDisliked: req.body.userId },
+        };
       }
     }
+    Sauce.updateOne({ _id: req.params.id }, { ...likeUpdate })
+    .then(() =>
+      res.status(200).json({ message: "Updated like status" })
+    );
   });
 };

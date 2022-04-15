@@ -37,6 +37,7 @@ exports.modifyOneSauce = (req, res) => {
         req.file.filename
       }`,
     };
+    console.log(typeof updatedSauce, updatedSauce)
     Sauce.findById(req.params.id).then((image) => {
       const imageFile = image.imageUrl.split("/images/")[1];
       fs.unlink(`images/${imageFile}`, (err) => {
@@ -49,6 +50,7 @@ exports.modifyOneSauce = (req, res) => {
     });
   } else {
     updatedSauce = { ...req.body };
+    console.log(typeof updatedSauce, updatedSauce)
   }
   Sauce.findByIdAndUpdate(
     { _id: req.params.id },

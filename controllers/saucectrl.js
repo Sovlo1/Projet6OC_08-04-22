@@ -32,11 +32,6 @@ exports.addSauce = (req, res) => {
 
 exports.modifyOneSauce = (req, res) => {
   let updatedSauce;
-  Sauce.findById(req.params.id).then((sauce) => {
-    if (req.body.userId !== sauce.userId) {
-      return res.status(401).json({ message: "Unauthorized operation" });
-    }
-  });
   if (req.file) {
     updatedSauce = {
       ...JSON.parse(req.body.sauce),
@@ -57,12 +52,15 @@ exports.modifyOneSauce = (req, res) => {
   } else {
     updatedSauce = { ...req.body };
   }
-  Sauce.findByIdAndUpdate(
-    { _id: req.params.id },
-    { ...updatedSauce, _id: req.params.id }
-  )
-    .then((sauce) => res.status(200).json(sauce))
-    .catch((error) => res.status(400).json({ error }));
+  Sauce.findById(req.params.id).then((sauce) => {
+    if (req.body.userId !== sauce.userId) {
+      return res.status(401).json({ message: "Unauthorized operation" });
+    }
+    Sauce.updateOne({ _id: req.params.id },
+      { ...updatedSauce, _id: req.params.id })
+      .then((sauce) => res.status(200).json(sauce))
+      .catch((error) => res.status(400).json({ error }));
+  })
 };
 
 exports.deleteOneSauce = (req, res) => {

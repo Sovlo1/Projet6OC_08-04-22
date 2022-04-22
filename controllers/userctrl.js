@@ -87,7 +87,8 @@ exports.deleteUser = async (req, res) => {
   await Sauce.deleteMany({ userId: req.body.user });
   User.deleteOne({ _id: req.body.user }).then(() => {
     res.status(200).json({ message: "account successfully deleted" });
-  });
+  })
+  .catch((error) => res.status(500).json({error}));
 };
 
 

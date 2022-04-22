@@ -27,11 +27,16 @@ exports.addSauce = (req, res) => {
   newSauce
     .save()
     .then(() => res.status(201).json({ message: "New sauce added" }))
-    .catch((error) => res.status(500).json({error}));;
+    .catch((error) => res.status(500).json({ error }));
 };
 
 exports.modifyOneSauce = (req, res) => {
   let updatedSauce;
+  Sauce.findById(req.params.id).then((sauce) => {
+    if (req.body.userId !== sauce.userId) {
+      return res.status(401).json({ message: "Unauthorized operation" });
+    }
+  });
   if (req.file) {
     updatedSauce = {
       ...JSON.parse(req.body.sauce),
@@ -39,8 +44,8 @@ exports.modifyOneSauce = (req, res) => {
         req.file.filename
       }`,
     };
-    Sauce.findById(req.params.id).then((image) => {
-      const imageFile = image.imageUrl.split("/images/")[1];
+    Sauce.findById(req.params.id).then((sauce) => {
+      const imageFile = sauce.imageUrl.split("/images/")[1];
       fs.unlink(`images/${imageFile}`, (err) => {
         if (err) {
           console.log(`Could not delete ${imageFile}`);
@@ -51,7 +56,6 @@ exports.modifyOneSauce = (req, res) => {
     });
   } else {
     updatedSauce = { ...req.body };
-    console.log(typeof updatedSauce, updatedSauce);
   }
   Sauce.findByIdAndUpdate(
     { _id: req.params.id },
@@ -64,6 +68,9 @@ exports.modifyOneSauce = (req, res) => {
 exports.deleteOneSauce = (req, res) => {
   Sauce.findById(req.params.id)
     .then((sauce) => {
+      if (req.body.userId !== sauce.userId) {
+        return res.status(401).json({ message: "Unauthorized operation" });
+      }
       const imageFile = sauce.imageUrl.split("/images/")[1];
       fs.unlink(`images/${imageFile}`, () => {
         Sauce.deleteOne({ _id: req.params.id })
@@ -111,7 +118,7 @@ exports.likeOneSauce = (req, res) => {
             $pull: { usersDisliked: req.body.userId },
           };
         } else {
-          return res.status(406).json({ message: "Something went wrong" })
+          return res.status(406).json({ message: "Something went wrong" });
         }
       }
       Sauce.updateOne({ _id: req.params.id }, { ...likeUpdate })

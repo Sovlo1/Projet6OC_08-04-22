@@ -21,8 +21,8 @@ exports.addSauce = (req, res) => {
     imageUrl: `${req.protocol}://${req.get("host")}/images/${
       req.file.filename
     }`,
-    likes: 0,
-    dislikes: 0,
+    // likes: 0,
+    // dislikes: 0,
   });
   newSauce
     .save()
@@ -53,8 +53,8 @@ exports.modifyOneSauce = (req, res) => {
     updatedSauce = { ...req.body };
   }
   Sauce.findById(req.params.id).then((sauce) => {
-    if (req.body.userId !== sauce.userId) {
-      return res.status(401).json({ message: "Unauthorized operation" });
+    if (req.auth.userId !== sauce.userId) {
+      return res.status(401).json({ message: "Unauthorized operation mec" });
     }
     Sauce.updateOne({ _id: req.params.id },
       { ...updatedSauce, _id: req.params.id })
@@ -66,7 +66,7 @@ exports.modifyOneSauce = (req, res) => {
 exports.deleteOneSauce = (req, res) => {
   Sauce.findById(req.params.id)
     .then((sauce) => {
-      if (req.body.userId !== sauce.userId) {
+      if (req.auth.userId !== sauce.userId) {
         return res.status(401).json({ message: "Unauthorized operation" });
       }
       const imageFile = sauce.imageUrl.split("/images/")[1];

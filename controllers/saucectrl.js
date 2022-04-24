@@ -54,7 +54,7 @@ exports.modifyOneSauce = (req, res) => {
   }
   Sauce.findById(req.params.id).then((sauce) => {
     if (req.auth.userId !== sauce.userId) {
-      return res.status(401).json({ message: "Unauthorized operation mec" });
+      return res.status(401).json({ message: "Unauthorized operation" });
     }
     Sauce.updateOne({ _id: req.params.id },
       { ...updatedSauce, _id: req.params.id })

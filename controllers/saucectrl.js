@@ -56,11 +56,13 @@ exports.modifyOneSauce = (req, res) => {
     if (req.auth.userId !== sauce.userId) {
       return res.status(401).json({ message: "Unauthorized operation" });
     }
-    Sauce.updateOne({ _id: req.params.id },
-      { ...updatedSauce, _id: req.params.id })
+    Sauce.updateOne(
+      { _id: req.params.id },
+      { ...updatedSauce, _id: req.params.id }
+    )
       .then((sauce) => res.status(200).json(sauce))
       .catch((error) => res.status(400).json({ error }));
-  })
+  });
 };
 
 exports.deleteOneSauce = (req, res) => {

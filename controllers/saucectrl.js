@@ -20,9 +20,7 @@ exports.addSauce = (req, res) => {
     ...sauceName,
     imageUrl: `${req.protocol}://${req.get("host")}/images/${
       req.file.filename
-    }`,
-    // likes: 0,
-    // dislikes: 0,
+    }`
   });
   newSauce
     .save()

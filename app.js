@@ -49,10 +49,6 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get("/test", (req, res) => {
-  res.status(200).json({ message: "hello" });
-});
-
 app.use("/images", express.static(path.join(__dirname, "images")));
 app.use("/api/auth", userRoutes);
 app.use("/api", sauceRoutes);

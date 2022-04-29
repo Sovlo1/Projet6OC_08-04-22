@@ -1,6 +1,5 @@
 const Sauce = require("../models/saucemodel");
 const fs = require("fs");
-const { resolveObjectURL } = require("buffer");
 
 exports.listAllSauces = (req, res) => {
   Sauce.find()
